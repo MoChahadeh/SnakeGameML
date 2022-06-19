@@ -33,6 +33,9 @@ class Snake(pygame.sprite.Sprite):
             elif (self.direction == "DOWN"):
                 self.pos.y += 10
 
+            if(self.bodyCollision()):
+                self.dead = True
+
             self.body.insert(0, pygame.Vector2(self.pos.x, self.pos.y))
 
             if(self.foodCollision()):
@@ -45,6 +48,7 @@ class Snake(pygame.sprite.Sprite):
 
             if (self.borderCollision()):
                 self.dead = True
+            
             if(self.movesLeft <= 0):
                 self.dead = True
                 print("ran out of moves", self.index)
@@ -57,6 +61,9 @@ class Snake(pygame.sprite.Sprite):
     
     def borderCollision(self):
         return self.pos.x == 0 or self.pos.x == 750 or self.pos.y == 0 or self.pos.y == 450
+    
+    def bodyCollision(self):
+        return next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y), None) != None
 
     def changeDirection(self, direction: str):
         

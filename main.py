@@ -109,7 +109,7 @@ def restartAndMutate():
         dead.append(False)
 
         # Copies one of the three best performing neurons and appends it the list of neurons
-        nets[i] = deepcopy(nets[maximums[i%5]])
+        nets[i] = deepcopy(nets[maximums[i%3]])
         # Mutates the newly assigned neural net by a random rate between -15% and +15%
         nets[i].mutate(0.12)
 
