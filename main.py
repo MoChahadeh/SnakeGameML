@@ -12,7 +12,7 @@ FPS = 60
 clock = pygame.time.Clock()
 
 genNumber = 1
-population = 40
+population = 200
 
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("SnakeGameML")
