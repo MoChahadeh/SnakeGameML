@@ -22,24 +22,29 @@ def sigmoid(Z):
 class NeuralNet():
 
     # class constructor
-    def __init__(self, i:int, h:int, o:int):
+    def __init__(self, i:int, h1:int, o:int):
 
         # Initalizing Weights and biases with random numbers between -0.5 and +0.5
-        self.W1:np.ndarray = np.random.rand(h, i) - 0.5
-        self.b1:np.ndarray = np.random.rand(h, 1) - 0.5
-        self.W2:np.ndarray = np.random.rand(o, h) -0.5
-        self.b2:np.ndarray = np.random.rand(o,1) -0.5
+        self.W1:np.ndarray = np.random.rand(h1, i) - 0.5
+        self.b1:np.ndarray = np.random.rand(h1, 1) - 0.5
+        # self.W2:np.ndarray = np.random.rand(h2, h1) -0.5
+        # self.b2:np.ndarray = np.random.rand(h2,1) -0.5
+        self.W3:np.ndarray = np.random.rand(o, h1) -0.5
+        self.b3:np.ndarray = np.random.rand(o,1) -0.5
     
     # forward propogation
     def forward(self, inputs: np.ndarray):
 
         Z1 = np.dot(self.W1,np.transpose(inputs)) + self.b1     # first hidden layer, takes the transpose input array as inputs
-        A1 = sigmoid(Z1)    # sigmoid activation for hidden layer
+        A1 = ReLU(Z1)    # sigmoid activation for hidden layer
 
-        Z2 = np.dot(self.W2, A1) + self.b2  # output layer, takes activation function of previous layer as input.
-        A2 = sigmoid(Z2)    # sigmoid activation for output layer
+        # Z2 = np.dot(self.W2, A1) + self.b2  # output layer, takes activation function of previous layer as input.
+        # A2 = ReLU(Z2)    # sigmoid activation for output layer
 
-        return A2   # Activation for output layer, having dimensions of "o" rows and one column
+        Z3 = np.dot(self.W3, A1) + self.b3  # output layer, takes activation function of previous layer as input.
+        A3 = sigmoid(Z3)    # sigmoid activation for output layer
+
+        return A3   # Activation for output layer, having dimensions of "o" rows and one column
     
     # mutation of network
     def mutate(self, rate):
@@ -52,7 +57,11 @@ class NeuralNet():
         self.W1 = self.W1 + (self.W1 * (np.random.rand(W1r, W1c) - 0.5) / (0.5/rate))
         b1r, b1c = self.b1.shape
         self.b1 = self.b1 + (self.b1 * (np.random.rand(b1r, b1c) - 0.5) / (0.5/rate))
-        W2r, W2c = self.W2.shape
-        self.W2 = self.W2 + (self.W2 * (np.random.rand(W2r, W2c) - 0.5) / (0.5/rate))
-        b2r, b2c = self.b2.shape
-        self.b2 = self.b2 + (self.b2 * (np.random.rand(b2r, b2c) - 0.5) / (0.5/rate))
+        # W2r, W2c = self.W2.shape
+        # self.W2 = self.W2 + (self.W2 * (np.random.rand(W2r, W2c) - 0.5) / (0.5/rate))
+        # b2r, b2c = self.b2.shape
+        # self.b2 = self.b2 + (self.b2 * (np.random.rand(b2r, b2c) - 0.5) / (0.5/rate))
+        W3r, W3c = self.W3.shape
+        self.W3 = self.W3 + (self.W3 * (np.random.rand(W3r, W3c) - 0.5) / (0.5/rate))
+        b3r, b3c = self.b3.shape
+        self.b3 = self.b3 + (self.b3 * (np.random.rand(b3r, b3c) - 0.5) / (0.5/rate))
