@@ -1,32 +1,47 @@
+#   June 20th, 2022, 06:55PM Friday
+#   Mohamad Chahadeh, ©2022
+#   https://MoChahadeh.github.io/
+#   https://twitter.com/MoChahadeh
+
+# libraries and settings
 import pygame
 from random import *
-
-from sympy import interpolating_spline
 from settings import *
 
+# possible directions
 directions = ["UP", "RIGHT", "DOWN", "LEFT"]
 
+
+# Snake Class
 class Snake(pygame.sprite.Sprite):
 
+    # Class Contructor
     def __init__(self, *groups, index = None) -> None:
-        super().__init__(*groups)
-        self.pos = pygame.Vector2(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10)
-        self.body = [pygame.Vector2(self.pos.x,self.pos.y), pygame.Vector2(self.pos.x-10, self.pos.y), pygame.Vector2(self.pos.x-20, self.pos.y)]
+        super().__init__(*groups)   #calling superclass (Sprite) constructor
+        self.pos = pygame.Vector2(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10)      # inital position of snake (Random)
+
+        self.body = [pygame.Vector2(self.pos.x,self.pos.y), pygame.Vector2(self.pos.x-10, self.pos.y), pygame.Vector2(self.pos.x-20, self.pos.y)]   # Body of snake as a list of Vector positions
         self.color = SNAKECOLOR
-        self.food = pygame.rect.Rect(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10, 10, 10)
-        self.direction = choice(directions)
-        self.dead = False
+        self.food = pygame.rect.Rect(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10, 10, 10)   # food for the Snake, Initialized at a random position
+        self.direction = choice(directions)     # random first direction of snake
+        self.dead = False   # dead state variable of the snake
         self.eatenFood = False
-        self.index = index
-        self.movesLeft = initialMoves
+        self.index = index  # index of snake in the Snakes Sprite Group defined in settings.py
+        self.movesLeft = initialMoves   # number of moves left for the snake before it dies, initialized in settings.py
+
+    # Draws the snake's body and food on the WINDOW
     def draw(self):
         for i in range(len(self.body)):
-            pygame.draw.rect(WINDOW, self.color, pygame.Rect(self.body[i].x, self.body[i].y, 10, 10))
-        pygame.draw.rect(WINDOW, WHITECOLOR, self.food)
+            pygame.draw.rect(WINDOW, self.color, pygame.Rect(self.body[i].x, self.body[i].y, 10, 10))   # draws the body
+        pygame.draw.rect(WINDOW, WHITECOLOR, self.food)     # draws the food
 
     def update(self):
-        self.eatenFood = False
-        if(not self.dead):
+
+        self.eatenFood = False      # resets the variable if the food was eaten in the previous frame..
+
+        if(not self.dead):      # updates the snake's states if it's not dead already
+
+            # moves the snake in the set direction
             if(self.direction == "RIGHT"):
                 self.pos.x += 10
             elif(self.direction == "LEFT"):
@@ -36,43 +51,46 @@ class Snake(pygame.sprite.Sprite):
             elif (self.direction == "DOWN"):
                 self.pos.y += 10
 
-            if(self.bodyCollision()):
+            
+            if(self.bodyCollision()):   # kills the snake if it "Touches" itself ;)
                 self.dead = True
 
-            self.body.insert(0, pygame.Vector2(self.pos.x, self.pos.y))
+            
+            self.body.insert(0, pygame.Vector2(self.pos.x, self.pos.y))     # adds a new rect at the head of the snake, effectively making it grow
 
-            if(self.foodCollision()):
+            if(self.foodCollision()):       # if the snake ate the food
                 self.eatenFood = True
-                self.food.x = randint(4, 70)*10
-                self.food.y = randint(2, 40)*10
-                self.movesLeft += 80
+                self.food.x = randint(4, 70)*10    # VVVV
+                self.food.y = randint(2, 40)*10    # Resets the food's position randomly
+                self.movesLeft += 80    # rewards the snake with more moves
                 # print("FOOD INSIDE")
-            else : self.body.pop()
+            else : self.body.pop()      # if the snake didn't eat the food, it removes the last rect from the body, creating the motion effect...
 
-            if (self.borderCollision()):
+            if (self.borderCollision()):    # if snake collides with the borders of the screen
                 self.dead = True
             
-            if(self.movesLeft <= 0):
+            if(self.movesLeft <= 0):    # if the snake runs out of moves
                 self.dead = True
                 print("ran out of moves", self.index)
 
-            self.movesLeft -= 1
-            self.draw()
+            self.movesLeft -= 1     # decreases the moves with each frame
+            self.draw()     # draws the snake on the screen
 
-    def foodCollision(self):
+    def foodCollision(self):        # self explanatory
         return self.pos.x == self.food.x and self.pos.y == self.food.y
     
-    def borderCollision(self):
-        return self.pos.x == 0 or self.pos.x == 750 or self.pos.y == 0 or self.pos.y == 450
+    def borderCollision(self):      # self explanatory
+        return self.pos.x == 0 or self.pos.x == WIDTH-10 or self.pos.y == -10 or self.pos.y == HEIGHT
     
     def bodyCollision(self):
         return next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y), None) != None
 
     def changeDirection(self, direction: str):
         
-        if (self.direction == directions[(directions.index(direction)+2) % 4]): self.dead = True
+        if (self.direction == directions[(directions.index(direction)+2) % 4]): self.dead = True    # checks if the direction to change to is opposite of current direction
         else: self.direction = direction
     
+    # checking for danger (i.e. moving in this direction would kill the snake)
     def dangerRight(self):
         return self.pos.x+10 == 750 or next((rect for rect in self.body if rect.x == self.pos.x+10 and rect.y == self.pos.y), None) != None
     def dangerLeft(self):

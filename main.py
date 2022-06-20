@@ -1,3 +1,9 @@
+#   June 20th, 2022, 06:55PM Friday
+#   Mohamad Chahadeh, ©2022
+#   https://MoChahadeh.github.io/
+#   https://twitter.com/MoChahadeh
+
+# libraries and settings
 import pygame
 import numpy as np
 from neuralnet import NeuralNet

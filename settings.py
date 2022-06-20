@@ -1,31 +1,54 @@
+#   June 20th, 2022, 06:55PM Friday
+#   Mohamad Chahadeh, ©2022
+#   https://MoChahadeh.github.io/
+#   https://twitter.com/MoChahadeh
+
+
+# libraries and classes
 import pygame
 from neuralnet import NeuralNet
 
+
+# Width and Height of pygame window
 WIDTH = 750
 HEIGHT = 450
 
+
+# Game windows initialization
+WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("SnakeGameML")
+
+
+# fps of game loop
 FPS = 60
 clock = pygame.time.Clock()
 
-genNumber = 1
+
+# gameplay settings
 population = 200
 initialMoves = 200
 copyBest = 5
 mutationRate = 0.12
 foodReward = 150
 
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("SnakeGameML")
 
+# colors used in game
 BGCOLOR = (100,100,100)
 SNAKECOLOR = (50,200,80)
 WHITECOLOR = (255,255,255)
 
+
+# text writer intialization
 pygame.font.init()
 writer = pygame.font.SysFont("Roboto", 20)
 
+
+# Snake Sprites Group
 snakes = pygame.sprite.Group()
 
+
+# State variables
+genNumber = 1
 nets: list[NeuralNet] = []
 fitness = [0] * population
 dead = [False] * population
