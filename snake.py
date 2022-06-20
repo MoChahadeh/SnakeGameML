@@ -80,7 +80,7 @@ class Snake(pygame.sprite.Sprite):
         return self.pos.x == self.food.x and self.pos.y == self.food.y
     
     def borderCollision(self):      # self explanatory
-        return self.pos.x == 0 or self.pos.x == WIDTH-10 or self.pos.y == -10 or self.pos.y == HEIGHT
+        return self.pos.x == -10 or self.pos.x == WIDTH or self.pos.y == -10 or self.pos.y == HEIGHT
     
     def bodyCollision(self):
         return next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y), None) != None
@@ -92,13 +92,13 @@ class Snake(pygame.sprite.Sprite):
     
     # checking for danger (i.e. moving in this direction would kill the snake)
     def dangerRight(self):
-        return self.pos.x+10 == 750 or next((rect for rect in self.body if rect.x == self.pos.x+10 and rect.y == self.pos.y), None) != None
+        return self.pos.x+10 == WIDTH or next((rect for rect in self.body if rect.x == self.pos.x+10 and rect.y == self.pos.y), None) != None
     def dangerLeft(self):
-        return self.pos.x-10 == 0 or next((rect for rect in self.body if rect.x == self.pos.x-10 and rect.y == self.pos.y), None) != None
+        return self.pos.x-10 == -10 or next((rect for rect in self.body if rect.x == self.pos.x-10 and rect.y == self.pos.y), None) != None
     def dangerUp(self):
-        return self.pos.y-10 == 0 or next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y-10), None) != None
+        return self.pos.y-10 == -10 or next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y-10), None) != None
     def dangerDown(self):
-        return self.pos.y+10 == 450 or next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y+10), None) != None
+        return self.pos.y+10 == HEIGHT or next((rect for rect in self.body if rect.x == self.pos.x and rect.y == self.pos.y+10), None) != None
     
     def danger(self):
         return self.dangerRight() or self.dangerLeft() or self.dangerDown() or self.dangerUp()
