@@ -99,9 +99,9 @@ def restartAndMutate():
         snakes.add(Snake(index = i))
         dead.append(False)
 
-        # Copies one of the three best performing neurons and appends it the list of neurons
+        # Copies one of the best performing neurons and appends it the list of neurons
         nets[i] = deepcopy(nets[maximums[i%copyBest]])
-        # Mutates the newly assigned neural net by a random rate between -15% and +15%
+        # Mutates the newly assigned neural net by a random rate between -+mutationRate defined in settings.py
         nets[i].mutate(mutationRate)
 
 if __name__ == "__main__":
