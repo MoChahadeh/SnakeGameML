@@ -3,28 +3,8 @@ import numpy as np
 from neuralnet import NeuralNet
 from snake import Snake
 from copy import deepcopy
+from settings import *
 
-
-WIDTH = 750
-HEIGHT = 450
-
-FPS = 60
-clock = pygame.time.Clock()
-
-genNumber = 1
-population = 200
-
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("SnakeGameML")
-
-pygame.font.init()
-writer = pygame.font.SysFont("Roboto", 20)
-
-snakes = pygame.sprite.Group()
-
-nets: list[NeuralNet] = []
-fitness = [0] * population
-dead = [False] * population
 
 for i in range(population):
 
@@ -109,7 +89,7 @@ def restartAndMutate():
         dead.append(False)
 
         # Copies one of the three best performing neurons and appends it the list of neurons
-        nets[i] = deepcopy(nets[maximums[i%3]])
+        nets[i] = deepcopy(nets[maximums[i%5]])
         # Mutates the newly assigned neural net by a random rate between -15% and +15%
         nets[i].mutate(0.12)
 
