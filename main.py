@@ -26,7 +26,7 @@ def main_loop():
     global dead
     running = True
     while running:
-        WINDOW.fill((100,100,100))
+        WINDOW.fill(BGCOLOR)
         for event in pygame.event.get():
             if(event == pygame.QUIT):
                 running = False
@@ -54,7 +54,7 @@ def main_loop():
                 fitness[currentSnake.index] += 1
 
                 if(currentSnake.eatenFood):
-                    fitness[currentSnake.index] += 150
+                    fitness[currentSnake.index] += foodReward
                     print("FOOD", currentSnake.index)
                 
                 # if(currentSnake.danger()): fitness[currentSnake.index] -= 1
@@ -66,7 +66,7 @@ def main_loop():
             print(fitness)
             restartAndMutate()
 
-        snakes.update(WINDOW)
+        snakes.update()
         drawLabels()
         pygame.display.update()
         clock.tick(FPS)
@@ -89,9 +89,9 @@ def restartAndMutate():
         dead.append(False)
 
         # Copies one of the three best performing neurons and appends it the list of neurons
-        nets[i] = deepcopy(nets[maximums[i%5]])
+        nets[i] = deepcopy(nets[maximums[i%copyBest]])
         # Mutates the newly assigned neural net by a random rate between -15% and +15%
-        nets[i].mutate(0.12)
+        nets[i].mutate(mutationRate)
 
 if __name__ == "__main__":
     main_loop()

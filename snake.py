@@ -1,5 +1,8 @@
 import pygame
-from random import randint
+from random import *
+
+from sympy import interpolating_spline
+from settings import *
 
 directions = ["UP", "RIGHT", "DOWN", "LEFT"]
 
@@ -7,21 +10,21 @@ class Snake(pygame.sprite.Sprite):
 
     def __init__(self, *groups, index = None) -> None:
         super().__init__(*groups)
-        self.pos = pygame.Vector2(randint(4, 70)*10, randint(2, 40)*10)
+        self.pos = pygame.Vector2(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10)
         self.body = [pygame.Vector2(self.pos.x,self.pos.y), pygame.Vector2(self.pos.x-10, self.pos.y), pygame.Vector2(self.pos.x-20, self.pos.y)]
-        self.color = (50,200,80)
-        self.food = pygame.rect.Rect(randint(4, 70)*10, randint(2, 40)*10, 10, 10)
-        self.direction = "RIGHT"
+        self.color = SNAKECOLOR
+        self.food = pygame.rect.Rect(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10, 10, 10)
+        self.direction = choice(directions)
         self.dead = False
         self.eatenFood = False
         self.index = index
-        self.movesLeft = 200
-    def draw(self, WINDOW: pygame.Surface):
+        self.movesLeft = initialMoves
+    def draw(self):
         for i in range(len(self.body)):
             pygame.draw.rect(WINDOW, self.color, pygame.Rect(self.body[i].x, self.body[i].y, 10, 10))
-        pygame.draw.rect(WINDOW, (255,255,255), self.food)
+        pygame.draw.rect(WINDOW, WHITECOLOR, self.food)
 
-    def update(self, WINDOW):
+    def update(self):
         self.eatenFood = False
         if(not self.dead):
             if(self.direction == "RIGHT"):
@@ -54,7 +57,7 @@ class Snake(pygame.sprite.Sprite):
                 print("ran out of moves", self.index)
 
             self.movesLeft -= 1
-            self.draw(WINDOW)
+            self.draw()
 
     def foodCollision(self):
         return self.pos.x == self.food.x and self.pos.y == self.food.y
