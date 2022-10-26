@@ -5,6 +5,8 @@
 
 # Libraries and classes
 import numpy as np
+import json
+import datetime
 
 
 # ReLU Activation function for layers
@@ -22,15 +24,15 @@ def sigmoid(Z):
 class NeuralNet():
 
     # class constructor
-    def __init__(self, i:int, h1:int, o:int):
+    def __init__(self, i:int, h1:int, h2, o:int):
 
         # Initalizing Weights and biases with random numbers between -0.5 and +0.5
-        self.W1:np.ndarray = np.random.rand(h1, i) - 0.5
-        self.b1:np.ndarray = np.random.rand(h1, 1) - 0.5
-        # self.W2:np.ndarray = np.random.rand(h2, h1) -0.5
-        # self.b2:np.ndarray = np.random.rand(h2,1) -0.5
-        self.W3:np.ndarray = np.random.rand(o, h1) -0.5
-        self.b3:np.ndarray = np.random.rand(o,1) -0.5
+        self.W1:np.ndarray = (np.random.rand(h1, i) - 0.5)*3
+        self.b1:np.ndarray = (np.random.rand(h1, 1) - 0.5)*3
+        # self.W2:np.ndarray = (np.random.rand(h2, h1) -0.5)*5
+        # self.b2:np.ndarray = (np.random.rand(h2,1) -0.5)*5
+        self.W3:np.ndarray = (np.random.rand(o, h1) -0.5)*3
+        self.b3:np.ndarray = (np.random.rand(o,1) -0.5)*3
     
     # forward propogation
     def forward(self, inputs: np.ndarray):
@@ -65,3 +67,31 @@ class NeuralNet():
         self.W3 = self.W3 + (self.W3 * (np.random.rand(W3r, W3c) - 0.5) / (0.5/rate))
         b3r, b3c = self.b3.shape
         self.b3 = self.b3 + (self.b3 * (np.random.rand(b3r, b3c) - 0.5) / (0.5/rate))
+
+    def save(self):
+
+        date = datetime.datetime.now()
+        self.dict = {
+            "W1" : self.W1.tolist(),
+            "b1" : self.b1.tolist(),
+            # "W2" : self.W2.tolist(),
+            # "b2" : self.b2.tolist(),
+            "W3" : self.W3.tolist(),
+            "b3" : self.b3.tolist()
+        }
+
+        json_object = json.dumps(self.dict, indent = None)
+        with open(f"model-{date.year}-{date.month}-{date.day}-{date.hour}-{date.minute}-{date.second}.json", "w") as outfile:
+            outfile.write(json_object)
+    
+    def load(self, filepath):
+
+        with open(filepath) as json_file:
+            data = json.load(json_file)
+            self.W1 = np.array(data["W1"])
+            self.b1 = np.array(data["b1"])
+            # self.W2 = np.array(data["W2"])
+            # self.b2 = np.array(data["b2"])
+            self.W3 = np.array(data["W3"])
+            self.b3 = np.array(data["b3"])
+

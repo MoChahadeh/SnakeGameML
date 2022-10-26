@@ -24,6 +24,7 @@ class Snake(pygame.sprite.Sprite):
         self.color = SNAKECOLOR
         self.food = pygame.rect.Rect(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10, 10, 10)   # food for the Snake, Initialized at a random position
         self.direction = choice(directions)     # random first direction of snake
+        self.directionHistory = [self.direction]*4     # history of the directions of the snake
         self.dead = False   # dead state variable of the snake
         self.eatenFood = False
         self.index = index  # index of snake in the Snakes Sprite Group defined in settings.py
@@ -88,7 +89,9 @@ class Snake(pygame.sprite.Sprite):
     def changeDirection(self, direction: str):
         
         if (self.direction == directions[(directions.index(direction)+2) % 4]): self.dead = True    # checks if the direction to change to is opposite of current direction
-        else: self.direction = direction
+        else: 
+            self.direction = direction
+            self.directionHistory.append(direction)     # adds the direction to the direction history
     
     # checking for danger (i.e. moving in this direction would kill the snake)
     def dangerRight(self):

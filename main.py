@@ -12,10 +12,6 @@ from copy import deepcopy
 from settings import *
 
 
-# first population initalization
-for i in range(population):
-    nets.append(NeuralNet(12, 18, 4))
-    snakes.add(Snake(index=i))
 
 
 # Draws labels on WINDOW
@@ -33,7 +29,37 @@ def drawLabels():
 # Game Loop
 def main_loop():
     global dead
+
+    decided = False
+    while not decided:
+        decision = input("Do you want to train a new model (1) or load a saved model (2)? (e for exit):  ")
+
+        if(decision == "1"):
+            for i in range(population):
+                nets.append(NeuralNet(24, 30, 28, 4))
+                snakes.add(Snake(index=i))
+            decided = True
+        elif(decision == "2"):
+
+            modelname = input("enter model name: ")
+            modelNet = NeuralNet(24, 30, 28, 4)
+            modelNet.load(modelname)
+            for i in range(population):
+                net = deepcopy(modelNet)
+                net.mutate(mutationRate + (mutationRate * i%2))
+                nets.append(net)
+                snakes.add(Snake(index=i))
+            decided = True
+        elif(decision == "e"):
+            exit()
+        else:
+            print("Invalid Input")
+            continue
+
+
     running = True
+    ticks = -1
+    timelapse = False
     while running:
         WINDOW.fill(BGCOLOR)    # background
         for event in pygame.event.get():    # pygame window events
@@ -42,19 +68,22 @@ def main_loop():
             elif (event.type == pygame.KEYDOWN):    # Key down events
                 if(event.key == pygame.K_SPACE):
                     dead = [True] * population  # kills all snakes immediately which triggers the next generation
+                if(event.key == pygame.K_t):
+                    timelapse = not timelapse
+                if(event.key == pygame.K_s):
+                    nets[np.flip(np.argsort(fitness))[0]].save()
 
         for currentSnake in snakes.sprites():   # looping over all the snakes
 
             if not currentSnake.dead:   # checks if the snake is dead before it updates its states
 
                 # neural network inputs
-                inputs = [[currentSnake.pos.x < currentSnake.food.x, currentSnake.pos.x > currentSnake.food.x, currentSnake.food.y < currentSnake.pos.y, currentSnake.food.y > currentSnake.pos.y, currentSnake.direction == "UP", currentSnake.direction == "DOWN", currentSnake.direction == "RIGHT", currentSnake.direction == "LEFT", currentSnake.dangerUp(), currentSnake.dangerDown(), currentSnake.dangerRight(), currentSnake.dangerLeft()]]
+                inputs = [[currentSnake.pos.x < currentSnake.food.x, currentSnake.pos.x > currentSnake.food.x, currentSnake.food.y < currentSnake.pos.y, currentSnake.food.y > currentSnake.pos.y, currentSnake.direction == "UP", currentSnake.direction == "DOWN", currentSnake.direction == "RIGHT", currentSnake.direction == "LEFT", currentSnake.directionHistory[-2] == "UP", currentSnake.directionHistory[-2] == "DOWN", currentSnake.directionHistory[-2] == "RIGHT", currentSnake.directionHistory[-2] == "LEFT",  currentSnake.directionHistory[-3] == "UP", currentSnake.directionHistory[-3] == "DOWN", currentSnake.directionHistory[-3] == "RIGHT", currentSnake.directionHistory[-3] == "LEFT", currentSnake.directionHistory[-4] == "UP", currentSnake.directionHistory[-4] == "DOWN", currentSnake.directionHistory[-4] == "RIGHT", currentSnake.directionHistory[-4] == "LEFT", currentSnake.dangerUp(), currentSnake.dangerDown(), currentSnake.dangerRight(), currentSnake.dangerLeft()]]
 
                 nnOutput = nets[currentSnake.index].forward(inputs)     # Forward propogation on Neural Network
 
                 decision = np.flip(np.argsort(nnOutput.T[0]))[0]    # gets the index of the neuron with the heighest value, no negative values due to sigmoid activation function
 
-                # neuron 0: UP, neuron 1: DOWN, neuron 2: RIGHT, neuron 3: LEFT
                 if(decision == 0):
                     currentSnake.changeDirection("UP")
                 elif(decision == 1):
@@ -72,16 +101,21 @@ def main_loop():
                     print("FOOD", currentSnake.index)         
             else:
                 dead[currentSnake.index] = True     # if the snake's internal variable DEAD is true, sets the outside variable to true as well
-            
+        
+
         if(all(d == True for d in dead)):   # if all snakes are dead
             print(fitness)
             restartAndMutate()      # resets the state variables with mutations and selection of Neural Networks
 
         snakes.update()     # triggers update method for all snakes
-        drawLabels()        # draws the labels onto the screen in each frame
-        pygame.display.update()     # updates the pygame window to show the new drawings on the screen
-        clock.tick(FPS)     # sets the frame rate of the loop
-
+        ticks += 1
+        if(not timelapse):
+            drawLabels()        # draws the labels onto the screen in each frame
+            pygame.display.update()     # updates the pygame window to show the new drawings on the screen
+            clock.tick(FPS)     # sets the frame rate of the loop
+        elif(ticks % 15 == 0):
+                drawLabels()        # draws the labels onto the screen in each frame
+                pygame.display.update()     # updates the pygame window to show the new drawings on the screen
 
 def restartAndMutate():
     global genNumber
@@ -102,7 +136,7 @@ def restartAndMutate():
         # Copies one of the best performing neurons and appends it the list of neurons
         nets[i] = deepcopy(nets[maximums[i%copyBest]])
         # Mutates the newly assigned neural net by a random rate between -+mutationRate defined in settings.py
-        nets[i].mutate(mutationRate)
+        nets[i].mutate(mutationRate + (mutationRate * i%2))
 
 if __name__ == "__main__":
     main_loop()
