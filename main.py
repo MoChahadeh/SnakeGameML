@@ -85,12 +85,21 @@ def main_loop():
                 decision = np.flip(np.argsort(nnOutput.T[0]))[0]    # gets the index of the neuron with the heighest value, no negative values due to sigmoid activation function
 
                 if(decision == 0):
+                    # Don't change direction if the snake is already going in that direction
+                    if(currentSnake.direction == "UP"):
+                        continue
                     currentSnake.changeDirection("UP")
                 elif(decision == 1):
+                    if(currentSnake.direction == "DOWN"):
+                        continue
                     currentSnake.changeDirection("DOWN")
                 elif(decision == 2):
+                    if(currentSnake.direction == "RIGHT"):
+                        continue
                     currentSnake.changeDirection("RIGHT")
                 elif(decision == 3):
+                    if(currentSnake.direction == "LEFT"):
+                        continue
                     currentSnake.changeDirection("LEFT")
                 
                 # increments the fitness by 1 in each frame

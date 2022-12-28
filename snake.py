@@ -54,6 +54,7 @@ class Snake(pygame.sprite.Sprite):
 
             
             if(self.bodyCollision()):   # kills the snake if it "Touches" itself ;)
+                fitness[self.index] -= foodReward     # decreases the fitness of the snake
                 self.dead = True
 
             
@@ -63,11 +64,12 @@ class Snake(pygame.sprite.Sprite):
                 self.eatenFood = True
                 self.food.x = randint(4, 70)*10    # VVVV
                 self.food.y = randint(2, 40)*10    # Resets the food's position randomly
-                self.movesLeft += 80    # rewards the snake with more moves
+                self.movesLeft += 160    # rewards the snake with more moves
                 # print("FOOD INSIDE")
             else : self.body.pop()      # if the snake didn't eat the food, it removes the last rect from the body, creating the motion effect...
 
             if (self.borderCollision()):    # if snake collides with the borders of the screen
+                fitness[self.index] -= foodReward     # decreases the fitness of the snake
                 self.dead = True
             
             if(self.movesLeft <= 0):    # if the snake runs out of moves
