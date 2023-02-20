@@ -26,9 +26,9 @@ clock = pygame.time.Clock()
 
 # gameplay settings
 population = 500
-initialMoves = 300
+initialMoves = 250
 copyBest = 15
-mutationRate = 0.12
+mutationRate = 0.05
 foodReward = 400
 
 

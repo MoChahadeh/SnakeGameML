@@ -29,6 +29,7 @@ def drawLabels():
 # Game Loop
 def main_loop():
     global dead
+    global copyBest
 
     decided = False
     while not decided:
@@ -46,7 +47,7 @@ def main_loop():
             modelNet.load(modelname)
             for i in range(population):
                 net = deepcopy(modelNet)
-                net.mutate(mutationRate + (mutationRate * i%2))
+                net.mutate(mutationRate + (mutationRate * i%4))
                 nets.append(net)
                 snakes.add(Snake(index=i))
             decided = True
@@ -114,6 +115,8 @@ def main_loop():
 
         if(all(d == True for d in dead)):   # if all snakes are dead
             print(fitness)
+            if(max(fitness) > 10000): copyBest = 5
+            if(max(fitness) > 20000): copyBest = 2
             restartAndMutate()      # resets the state variables with mutations and selection of Neural Networks
 
         snakes.update()     # triggers update method for all snakes

@@ -19,7 +19,7 @@ class Snake(pygame.sprite.Sprite):
     def __init__(self, *groups, index = None) -> None:
         super().__init__(*groups)   #calling superclass (Sprite) constructor
         self.pos = pygame.Vector2(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10)      # inital position of snake (Random)
-
+        self.posHistory = [self.pos]
         self.body = [pygame.Vector2(self.pos.x,self.pos.y), pygame.Vector2(self.pos.x-10, self.pos.y), pygame.Vector2(self.pos.x-20, self.pos.y)]   # Body of snake as a list of Vector positions
         self.color = SNAKECOLOR
         self.food = pygame.rect.Rect(randint(1, (WIDTH-10)/10)*10, randint(1, (HEIGHT-10)/10)*10, 10, 10)   # food for the Snake, Initialized at a random position
@@ -52,6 +52,7 @@ class Snake(pygame.sprite.Sprite):
             elif (self.direction == "DOWN"):
                 self.pos.y += 10
 
+            self.posHistory.insert(0, pygame.Vector2(self.pos.x, self.pos.y))     # adds the new position to the history of positions
             
             if(self.bodyCollision()):   # kills the snake if it "Touches" itself ;)
                 fitness[self.index] -= foodReward     # decreases the fitness of the snake
@@ -75,6 +76,13 @@ class Snake(pygame.sprite.Sprite):
             if(self.movesLeft <= 0):    # if the snake runs out of moves
                 self.dead = True
                 print("ran out of moves", self.index)
+            
+            if len(self.posHistory) > 12:
+                if self.posHistory[0:4] == self.posHistory[4:8] and self.posHistory[0:4] == self.posHistory[8:12]:
+                    print(f"LOOPER {self.index} ELIMINATED")
+                    self.dead = True
+                    fitness[self.index] -= foodReward
+
 
             self.movesLeft -= 1     # decreases the moves with each frame
             self.draw()     # draws the snake on the screen
